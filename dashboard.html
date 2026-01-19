@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>有机农业管理系统</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* Dashboard specific styles */
+        body {
+            background: linear-gradient(135deg, #f5f7f5 0%, #e8f5e9 100%);
+            margin: 0;
+            padding: 0;
+            font-family: 'Noto Sans SC', sans-serif;
+            min-height: 100vh;
+        }
+
+        .dashboard-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .dashboard-header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(45, 90, 39, 0.1);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .dashboard-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .dashboard-logo svg {
+            width: 40px;
+            height: 40px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .dashboard-logo h1 {
+            font-size: 1.5rem;
+            color: var(--primary-green);
+            margin: 0;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: var(--pale-green);
+            padding: 0.5rem 1rem;
+            border-radius: 12px;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-green), var(--accent-green));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        /* Main content */
+        .dashboard-content {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: var(--text-gray);
+            margin-bottom: 2rem;
+        }
+
+        /* Stats grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid var(--accent-green);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-green);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-gray);
+            font-size: 0.95rem;
+        }
+
+        /* Categories layout - left to right, top to bottom */
+        .categories-section {
+            margin-top: 2rem;
+        }
+        
+        .category-group {
+            margin-bottom: 2.5rem;
+        }
+        
+        .category-main-title {
+            font-size: 1.75rem;
+            color: var(--primary-green);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .category-main-icon {
+            font-size: 2.5rem;
+        }
+        
+        .subcategories-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .subcategory-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .subcategory-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+            border-color: var(--accent-green);
+        }
+        
+        .subcategory-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .subcategory-card-icon {
+            font-size: 2rem;
+        }
+        
+        .subcategory-card-title {
+            font-size: 1.25rem;
+            color: var(--primary-green);
+            margin: 0;
+            font-weight: 600;
+        }
+        
+        .subcategory-card-desc {
+            color: var(--text-gray);
+            line-height: 1.6;
+        }
+
+        .category-card {
+            background: white;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .category-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .category-header {
+            background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+            color: white;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .category-icon {
+            font-size: 2rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.75rem;
+            border-radius: 12px;
+        }
+
+        .category-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .category-content {
+            padding: 1.5rem;
+        }
+
+        .subcategory-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .subcategory-item {
+            padding: 1rem;
+            background: var(--pale-green);
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            border: 2px solid transparent;
+        }
+
+        .subcategory-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .subcategory-item:hover {
+            background: var(--accent-green);
+            color: white;
+            border-color: var(--primary-green);
+            transform: translateX(8px);
+        }
+
+        .subcategory-icon {
+            font-size: 1.5rem;
+            background: rgba(255, 255, 255, 0.3);
+            padding: 0.5rem;
+            border-radius: 8px;
+        }
+
+        .subcategory-text {
+            flex: 1;
+        }
+
+        .subcategory-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .subcategory-desc {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        .subcategory-arrow {
+            font-size: 1.25rem;
+            transition: transform 0.3s ease;
+        }
+
+        .subcategory-item:hover .subcategory-arrow {
+            transform: translateX(4px);
+        }
+
+        /* Footer */
+        .dashboard-footer {
+            background: white;
+            padding: 1.5rem;
+            text-align: center;
+            color: var(--text-gray);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border-color);
+            margin-top: 2rem;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .dashboard-header {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+
+            .dashboard-content {
+                padding: 1rem;
+            }
+
+            .page-title {
+                font-size: 1.5rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .categories-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Animation */
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(5deg); }
+        }
+
+        /* Loading animation for content */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            font-size: 1.2rem;
+            color: var(--text-gray);
+        }
+
+        /* Scroll to top button */
+        .scroll-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--primary-green);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            opacity: 0;
+            visibility: hidden;
+            z-index: 99;
+        }
+
+        .scroll-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .scroll-top:hover {
+            background: var(--light-green);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-left">
+                <div class="dashboard-logo">
+                    <svg viewBox="0 0 100 100" class="leaf-icon">
+                        <path d="M50 10 C20 30 10 60 50 90 C90 60 80 30 50 10 Z M50 30 C60 40 55 60 50 70 C45 60 40 40 50 30" fill="#2d5a27"/>
+                    </svg>
+                    <h1>有机农业</h1>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="user-info">
+                    <div class="user-avatar">U</div>
+                    <div>
+                        <div style="font-weight: 600;">农场管理员</div>
+                        <div style="font-size: 0.85rem; opacity: 0.8;">在线</div>
+                    </div>
+                </div>
+                <button class="logout-btn" style="background: #ef5350; color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-weight: 500;">
+                    退出登录
+                </button>
+            </div>
+        </header>
+
+        <!-- Main content -->
+        <main class="dashboard-content">
+            <h1 class="page-title">欢迎回来</h1>
+            <p class="page-subtitle">管理您的有机农业生产系统</p>
+
+            <!-- Stats cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">🌾</div>
+                    <div class="stat-value">126</div>
+                    <div class="stat-label">监测地块</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-value">2.4K</div>
+                    <div class="stat-label">数据采集次数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🤖</div>
+                    <div class="stat-value">98.5%</div>
+                    <div class="stat-label">AI诊断准确率</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-value">32</div>
+                    <div class="stat-label">今日执行任务</div>
+                </div>
+            </div>
+
+            <!-- Categories Section -->
+            <div class="categories-section">
+                <!-- 数据采集 -->
+                <div class="category-group">
+                    <h2 class="category-main-title">
+                        <span class="category-main-icon">📡</span>
+                        数据采集
+                    </h2>
+                    <div class="subcategories-container">
+                        <div class="subcategory-card">
+                            <div class="subcategory-header">
+                                <span class="subcategory-card-icon">🌈</span>
+                                <h3 class="subcategory-card-title">高光谱成像</h3>
+                            </div>
+                            <p class="subcategory-card-desc">采集作物生长的高光谱数据，通过光谱分析了解作物健康状况和营养水平。</p>
+                        </div>
+                        <div class="subcategory-card">
+                            <div class="subcategory-header">
+                                <span class="subcategory-card-icon">📸</span>
+                                <h3 class="subcategory-card-title">多光谱成像</h3>
+                            </div>
+                            <p class="subcategory-card-desc">通过多光谱相机监测作物健康，识别病虫害和营养缺乏等问题。</p>
+                        </div>
+                        <div class="subcategory-card">
+                            <div class="subcategory-header">
+                                <span class="subcategory-card-icon">🌡️</span>
+                                <h3 class="subcategory-card-title">热成像</h3>
+                            </div>
+                            <p class="subcategory-card-desc">利用热成像技术检测作物水分状况，优化灌溉管理，提高水资源利用效率。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI智能诊断 -->
+                <div class="category-group">
+                    <h2 class="category-main-title">
+                        <span class="category-main-icon">🤖</span>
+                        AI智能诊断
+                    </h2>
+                    <div class="subcategories-container">
+                        <div class="subcategory-card">
+                            <div class="subcategory-header">
+                                <span class="subcategory-card-icon">👁️</span>
+                                <h3 class="subcategory-card-title">图像识别模型</h3>
+                            </div>
+                            <p class="subcategory-card-desc">基于深度学习的图像识别模型，快速准确识别作物病虫害和生长状况。</p>
+                        </div>
+                        <div class="subcategory-card">
+                            <div class="subcategory-header">
+                                <span class="subcategory-card-icon">📈</span>
+                                <h3 class="subcategory-card-title">成长模型预测</h3>
+                            </div>
+                            <p class="subcategory-card-desc">结合环境数据和作物生长数据，预测作物生长趋势和产量，优化种植管理。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 自主决策系统 -->
+                <div class="category-group">
+                    <h2 class="category-main-title">
+                        <span class="category-main-icon">🧠</span>
+                        自主决策系统
+                    </h2>
+                    <div class="subcategories-container">
+                        <div class="subcategory-card">
+                            <div class="subcategory-header">
+                                <span class="subcategory-card-icon">📋</span>
+                                <h3 class="subcategory-card-title">方案生成图</h3>
+                            </div>
+                            <p class="subcategory-card-desc">根据作物生长数据和环境条件，生成优化的种植和管理方案，提高生产效率。</p>
+                        </div>
+                        <div class="subcategory-card">
+                            <div class="subcategory-header">
+                                <span class="subcategory-card-icon">🗺️</span>
+                                <h3 class="subcategory-card-title">路径规划优化</h3>
+                            </div>
+                            <p class="subcategory-card-desc">优化农机作业路径，减少能耗和作业时间，提高农业生产自动化水平。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 精准执行作业 -->
+                <div class="category-group">
+                    <h2 class="category-main-title">
+                        <span class="category-main-icon">🚜</span>
+                        精准执行作业
+                    </h2>
+                    <div class="subcategories-container">
+                        <div class="subcategory-card">
+                            <div class="subcategory-header">
+                                <span class="subcategory-card-icon">💧</span>
+                                <h3 class="subcategory-card-title">变量喷洒</h3>
+                            </div>
+                            <p class="subcategory-card-desc">根据作物需求精准喷洒农药和肥料，减少资源浪费，保护环境。</p>
+                        </div>
+                        <div class="subcategory-card">
+                            <div class="subcategory-header">
+                                <span class="subcategory-card-icon">🌱</span>
+                                <h3 class="subcategory-card-title">自主播种授粉</h3>
+                            </div>
+                            <p class="subcategory-card-desc">自动化播种和授粉作业，提高作业效率和准确性，降低劳动力成本。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="dashboard-footer">
+            <p>&copy; 2026 有机农业管理系统. 回归自然 · 守护健康</p>
+        </footer>
+    </div>
+
+    <!-- Scroll to top button -->
+    <div class="scroll-top" id="scrollTop">↑</div>
+
+    <script src="script.js"></script>
+    <script>
+        // Dashboard specific scripts
+        document.addEventListener('DOMContentLoaded', function() {
+            // Scroll to top functionality
+            const scrollTopBtn = document.getElementById('scrollTop');
+            
+            window.addEventListener('scroll', function() {
+                if (window.pageYOffset > 300) {
+                    scrollTopBtn.classList.add('visible');
+                } else {
+                    scrollTopBtn.classList.remove('visible');
+                }
+            });
+            
+            scrollTopBtn.addEventListener('click', function() {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+            
+            // Subcategory card click handlers
+            const subcategoryCards = document.querySelectorAll('.subcategory-card');
+            subcategoryCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const title = this.querySelector('.subcategory-card-title').textContent;
+                    alert(`${title}功能开发中`);
+                });
+            });
+            
+            // Logout functionality
+            const logoutBtn = document.querySelector('.logout-btn');
+            logoutBtn.addEventListener('click', function() {
+                if (confirm('确定要退出登录吗？')) {
+                    window.location.href = 'index.html';
+                }
+            });
+            
+            // Add some animation to stat cards
+            const statCards = document.querySelectorAll('.stat-card');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry, index) => {
+                    if (entry.isIntersecting) {
+                        setTimeout(() => {
+                            entry.target.style.opacity = '1';
+                            entry.target.style.transform = 'translateY(0)';
+                        }, index * 100);
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+            
+            statCards.forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(card);
+            });
+            
+            // Add animation to category cards
+            const categoryCards = document.querySelectorAll('.category-card');
+            categoryCards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 400 + index * 150);
+            });
+        });
+    </script>
+</body>
+</html>
